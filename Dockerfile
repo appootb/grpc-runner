@@ -38,6 +38,8 @@ ENV PROTOC_VER 3.12.2
 ENV JAVA_GRPC_VER 1.29.0
 # protoc-gen-grpc-web version: https://github.com/grpc/grpc-web/releases/latest
 ENV WEB_GRPC_VER 1.1.0
+# protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
+ENV DART_GRPC_VER 19.0.1
 
 # Jessie has been archived; sources.list should be updated
 RUN echo "deb http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list && \
@@ -53,7 +55,7 @@ RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${PR
 RUN sh -c 'curl https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -' && \
 	sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list' && \
 	apt update && apt install -y dart && \
-	/usr/lib/dart/bin/pub global activate protoc_plugin && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
+	/usr/lib/dart/bin/pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 
 # protoc-gen-grpc-java
 RUN curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${JAVA_GRPC_VER}/protoc-gen-grpc-java-${JAVA_GRPC_VER}-linux-x86_64.exe && \

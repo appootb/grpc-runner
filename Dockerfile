@@ -1,19 +1,25 @@
 FROM golang
 
-RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf
+ENV GO111MODULE on
 
-RUN go get github.com/golang/protobuf/protoc-gen-go && \
-	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway && \
-	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger && \
-	go get github.com/envoyproxy/protoc-gen-validate && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export
+RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
+	git clone https://github.com/envoyproxy/protoc-gen-validate.git /go/src/github.com/envoyproxy/protoc-gen-validate && \
+	git clone https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
+
+RUN go get github.com/golang/protobuf/protoc-gen-go@v1.4.2 && \
+	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
+	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
+	go get github.com/envoyproxy/protoc-gen-validate@v0.1.0 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-auth@v0.1.0 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v0.1.0 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v0.1.0
 
 FROM gcc:6
 
+# grpc_objective_c_plugin version: https://grpc.io/release
+ENV OBJC_PLUGIN_VER v1.28.1
 # Compile protoc-gen-objcgrpc
-RUN git clone https://github.com/grpc/grpc && cd grpc && git checkout $(curl -L https://grpc.io/release) && \
+RUN git clone https://github.com/grpc/grpc && cd grpc && git checkout ${OBJC_PLUGIN_VER} && \
 	git submodule update --init && make grpc_objective_c_plugin
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1

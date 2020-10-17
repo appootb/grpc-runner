@@ -78,7 +78,7 @@ COPY --from=0 /go/bin/* /usr/local/bin/
 # GOPATH, proto including files required
 COPY --from=0 /go/src/github.com/appootb/protobuf/appootb /go/src/github.com/appootb/protobuf/appootb
 COPY --from=0 /go/src/github.com/envoyproxy/protoc-gen-validate/validate /go/src/github.com/envoyproxy/protoc-gen-validate/validate
-COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
+COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 
 ENV GOPATH /go

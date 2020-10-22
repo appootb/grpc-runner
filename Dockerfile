@@ -10,9 +10,9 @@ RUN go get github.com/golang/protobuf/protoc-gen-go@v1.3.2 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
 	go get github.com/envoyproxy/protoc-gen-validate@v0.4.1-java && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.3 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.3 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.3
+	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.4 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.4 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.4
 
 FROM gcc:6
 

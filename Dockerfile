@@ -3,16 +3,15 @@ FROM golang
 ENV GO111MODULE on
 
 RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
-	git clone https://github.com/envoyproxy/protoc-gen-validate.git /go/src/github.com/envoyproxy/protoc-gen-validate && \
 	git clone https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
 
 RUN go get github.com/golang/protobuf/protoc-gen-go@v1.3.2 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
-	go get github.com/envoyproxy/protoc-gen-validate@v0.4.1-java && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.4 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.4 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.4
+	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.5 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.5 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.5 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-validate@v1.1.5
 
 FROM gcc:6
 
@@ -77,7 +76,6 @@ COPY --from=0 /go/bin/* /usr/local/bin/
 
 # GOPATH, proto including files required
 COPY --from=0 /go/src/github.com/appootb/protobuf/appootb /go/src/github.com/appootb/protobuf/appootb
-COPY --from=0 /go/src/github.com/envoyproxy/protoc-gen-validate/validate /go/src/github.com/envoyproxy/protoc-gen-validate/validate
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 

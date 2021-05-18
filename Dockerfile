@@ -8,10 +8,10 @@ RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb
 RUN go get github.com/golang/protobuf/protoc-gen-go@v1.3.2 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.6 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.6 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.6 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-validate@v1.1.6
+	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.7 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.7 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.7 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-validate@v1.1.7
 
 FROM gcc:6
 

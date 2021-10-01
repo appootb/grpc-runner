@@ -2,17 +2,16 @@ FROM golang
 
 ENV GO111MODULE on
 
-RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
-	git clone https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway && \
-	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis
+RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
+	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
+	git clone https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
 
 RUN go get github.com/golang/protobuf/protoc-gen-go@v1.3.2 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
 	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.1.9 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.1.9 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.1.9 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-validate@v1.1.9
+	go get github.com/appootb/grpc-gen/protoc-gen-ootb@v1.2.0 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.2.0 && \
+	go get github.com/appootb/grpc-gen/protoc-gen-validate@v1.2.0
 
 FROM gcc:6
 
@@ -76,8 +75,8 @@ COPY --from=1 /grpc/bins/opt/grpc_objective_c_plugin /usr/local/bin/protoc-gen-o
 COPY --from=0 /go/bin/* /usr/local/bin/
 
 # GOPATH, proto including files required
-COPY --from=0 /go/src/github.com/appootb/protobuf/appootb /go/src/github.com/appootb/protobuf/appootb
 COPY --from=0 /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
+COPY --from=0 /go/src/github.com/appootb/substratum/proto/appootb /go/src/github.com/appootb/substratum/proto/appootb
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options
 
 ENV GOPATH /go

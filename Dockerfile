@@ -2,30 +2,39 @@ FROM golang
 
 ENV GO111MODULE on
 
-RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
-	git clone https://github.com/envoyproxy/protoc-gen-validate.git /go/src/github.com/envoyproxy/protoc-gen-validate && \
-	git clone https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
+# protoc-gen-go version: https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go
+ENV PROTOC_GEN_GO_VER v1.27.1
+# protoc-gen-go-grpc version: https://pkg.go.dev/google.golang.org/grpc/cmd/protoc-gen-go-grpc
+ENV PROTOC_GEN_GO_GRPC_VER v1.1.0
+# grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
+ENV GRPC_GATEAY_VER v1.16.0
+# custome generator version: https://github.com/appootb/grpc-gen
+ENV CUSTOM_GEN_VER v1.3.0
 
-RUN go get github.com/golang/protobuf/protoc-gen-go@v1.4.2 && \
-	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.14.6 && \
-	go get github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.14.6 && \
-	go get github.com/envoyproxy/protoc-gen-validate@v0.3.0-java && \
-	go get github.com/appootb/grpc-gen/protoc-gen-auth@v1.0.0 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-markdown@v1.0.0 && \
-	go get github.com/appootb/grpc-gen/protoc-gen-dart-export@v1.0.0
+RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
+	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
+	git clone -b ${GRPC_GATEAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VER} && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@${PROTOC_GEN_GO_GRPC_VER} && \
+	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEAY_VER} && \
+	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@${GRPC_GATEAY_VER} && \
+	go install github.com/appootb/grpc-gen/protoc-gen-ootb@${CUSTOM_GEN_VER} && \
+	go install github.com/appootb/grpc-gen/protoc-gen-markdown@${CUSTOM_GEN_VER} && \
+	go install github.com/appootb/grpc-gen/protoc-gen-validate@${CUSTOM_GEN_VER}
 
 FROM gcc:6
 
-# grpc_objective_c_plugin version: https://grpc.io/release
-ENV OBJC_PLUGIN_VER v1.28.1
+# grpc_objective_c_plugin version: https://github.com/grpc/grpc/releases
+ENV OBJC_PLUGIN_VER v1.34.1
 # Compile protoc-gen-objcgrpc
-RUN git clone https://github.com/grpc/grpc && cd grpc && git checkout ${OBJC_PLUGIN_VER} && \
+RUN git clone -b ${OBJC_PLUGIN_VER} https://github.com/grpc/grpc && cd grpc && \
 	git submodule update --init && make grpc_objective_c_plugin
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 # grpc_csharp_plugin version: https://www.nuget.org/packages/Grpc.Tools
-ENV CS_PLUGIN_VER 2.29.0
+ENV CS_PLUGIN_VER 2.41.0
 RUN cd /root && dotnet new console && \
 	dotnet add package Grpc.Tools --version ${CS_PLUGIN_VER} && \
 	cp /root/.nuget/packages/grpc.tools/${CS_PLUGIN_VER}/tools/linux_x64/grpc_csharp_plugin /usr/local/bin/grpc_csharp_plugin
@@ -33,13 +42,13 @@ RUN cd /root && dotnet new console && \
 FROM debian:jessie
 
 # Protocol Buffers version: https://github.com/protocolbuffers/protobuf/releases/latest
-ENV PROTOC_VER 3.12.2
+ENV PROTOC_VER 3.18.1
 # protoc-gen-grpc-java version: https://mvnrepository.com/artifact/io.grpc/protoc-gen-grpc-java
-ENV JAVA_GRPC_VER 1.29.0
+ENV JAVA_GRPC_VER 1.41.0
 # protoc-gen-grpc-web version: https://github.com/grpc/grpc-web/releases/latest
-ENV WEB_GRPC_VER 1.1.0
+ENV WEB_GRPC_VER 1.2.1
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
-ENV DART_GRPC_VER 19.0.1
+ENV DART_GRPC_VER 20.0.0
 
 # Jessie has been archived; sources.list should be updated
 RUN echo "deb http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list && \
@@ -76,10 +85,9 @@ COPY --from=1 /grpc/bins/opt/grpc_objective_c_plugin /usr/local/bin/protoc-gen-o
 COPY --from=0 /go/bin/* /usr/local/bin/
 
 # GOPATH, proto including files required
-COPY --from=0 /go/src/github.com/appootb/protobuf/appootb /go/src/github.com/appootb/protobuf/appootb
-COPY --from=0 /go/src/github.com/envoyproxy/protoc-gen-validate/validate /go/src/github.com/envoyproxy/protoc-gen-validate/validate
+COPY --from=0 /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
+COPY --from=0 /go/src/github.com/appootb/substratum/proto/appootb /go/src/github.com/appootb/substratum/proto/appootb
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
-COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 
 ENV GOPATH /go
 

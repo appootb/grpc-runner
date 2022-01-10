@@ -9,7 +9,7 @@ ENV CUSTOM_GEN_VER v1.3.1
 
 RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
 	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
-	git clone -b ${GRPC_GATEAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
+	git clone -b ${GRPC_GATEWAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
 
 RUN go install github.com/golang/protobuf/protoc-gen-go@v1.3.2 && \
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEWAY_VER} && \
@@ -82,7 +82,7 @@ COPY --from=0 /go/bin/* /usr/local/bin/
 # GOPATH, proto including files required
 COPY --from=0 /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
 COPY --from=0 /go/src/github.com/appootb/substratum/proto/appootb /go/src/github.com/appootb/substratum/proto/appootb
-COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options
+COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
 
 ENV GOPATH /go
 

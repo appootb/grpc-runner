@@ -9,7 +9,7 @@ ENV PROTOC_GEN_GO_GRPC_VER v1.1.0
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
 ENV GRPC_GATEAY_VER v1.16.0
 # custome generator version: https://github.com/appootb/grpc-gen
-ENV CUSTOM_GEN_VER v1.3.0
+ENV CUSTOM_GEN_VER v1.3.1
 
 RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
 	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
@@ -32,7 +32,7 @@ ENV JAVA_GRPC_VER 1.41.0
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
 ENV DART_GRPC_VER 20.0.0
 
-# Jessie has been archived; sources.list should be updated
+# Install requirements
 RUN apt update && apt install -y apt-transport-https make curl unzip
 
 # protoc

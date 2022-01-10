@@ -7,18 +7,18 @@ ENV PROTOC_GEN_GO_VER v1.27.1
 # protoc-gen-go-grpc version: https://pkg.go.dev/google.golang.org/grpc/cmd/protoc-gen-go-grpc
 ENV PROTOC_GEN_GO_GRPC_VER v1.1.0
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
-ENV GRPC_GATEAY_VER v1.16.0
+ENV GRPC_GATEWAY_VER v1.16.0
 # custome generator version: https://github.com/appootb/grpc-gen
-ENV CUSTOM_GEN_VER v1.3.0
+ENV CUSTOM_GEN_VER v1.3.1
 
 RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
 	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
-	git clone -b ${GRPC_GATEAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
+	git clone -b ${GRPC_GATEWAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
 
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VER} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@${PROTOC_GEN_GO_GRPC_VER} && \
-	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEAY_VER} && \
-	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@${GRPC_GATEAY_VER} && \
+	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEWAY_VER} && \
+	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@${GRPC_GATEWAY_VER} && \
 	go install github.com/appootb/grpc-gen/protoc-gen-ootb@${CUSTOM_GEN_VER} && \
 	go install github.com/appootb/grpc-gen/protoc-gen-markdown@${CUSTOM_GEN_VER} && \
 	go install github.com/appootb/grpc-gen/protoc-gen-validate@${CUSTOM_GEN_VER}

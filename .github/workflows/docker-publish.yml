@@ -1,8 +1,8 @@
-name: Build and push image to Docker Hub
+name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ v0.6.x ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
 

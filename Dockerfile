@@ -2,21 +2,17 @@ FROM golang
 
 ENV GO111MODULE on
 
-# protoc-gen-go version: https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go
-ENV PROTOC_GEN_GO_VER v1.27.1
-# protoc-gen-go-grpc version: https://pkg.go.dev/google.golang.org/grpc/cmd/protoc-gen-go-grpc
-ENV PROTOC_GEN_GO_GRPC_VER v1.1.0
+# protoc-gen-go version: https://github.com/golang/protobuf
+ENV PROTOC_GEN_GO_VER v1.3.2
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
 ENV GRPC_GATEWAY_VER v1.16.0
 # custome generator version: https://github.com/appootb/grpc-gen
 ENV CUSTOM_GEN_VER v0.5.0
 
 RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
-	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
 	git clone -b ${GRPC_GATEWAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway
 
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VER} && \
-    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@${PROTOC_GEN_GO_GRPC_VER} && \
+RUN go install github.com/golang/protobuf/protoc-gen-go@${PROTOC_GEN_GO_VER} && \
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEWAY_VER} && \
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@${GRPC_GATEWAY_VER} && \
 	go install github.com/appootb/grpc-gen/protoc-gen-auth@${CUSTOM_GEN_VER} && \
@@ -86,8 +82,8 @@ COPY --from=1 /grpc/bins/opt/grpc_objective_c_plugin /usr/local/bin/protoc-gen-o
 COPY --from=0 /go/bin/* /usr/local/bin/
 
 # GOPATH, proto including files required
-COPY --from=0 /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
 COPY --from=0 /go/src/github.com/appootb/protobuf/appootb /go/src/github.com/appootb/protobuf/appootb
+COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis /go/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 COPY --from=0 /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
 
 ENV GOPATH /go

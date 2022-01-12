@@ -7,7 +7,7 @@ ENV PROTOC_GEN_GO_VER v1.3.2
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
 ENV GRPC_GATEWAY_VER v1.16.0
 # custome generator version: https://github.com/appootb/grpc-gen
-ENV CUSTOM_GEN_VER v1.3.1
+ENV CUSTOM_GEN_VER master
 
 RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
 	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \

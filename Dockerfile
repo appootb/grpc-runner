@@ -7,7 +7,7 @@ ENV PROTOC_GEN_GO_VER v1.3.2
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway
 ENV GRPC_GATEWAY_VER v1.16.0
 # custome generator version: https://github.com/appootb/grpc-gen
-ENV CUSTOM_GEN_VER v0.5.0
+ENV CUSTOM_GEN_VER v0.5.1
 
 RUN git clone https://github.com/appootb/protobuf.git /go/src/github.com/appootb/protobuf && \
 	git clone -b ${GRPC_GATEWAY_VER} https://github.com/grpc-ecosystem/grpc-gateway.git /go/src/github.com/grpc-ecosystem/grpc-gateway

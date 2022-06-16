@@ -124,6 +124,8 @@ COPY --from=binary /dart/dart-sdk/ /usr/lib/dart/
 
 ENV PATH /usr/lib/dart/bin:$PATH
 
+RUN ls -al /usr/lib/dart
+
 RUN dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 
 WORKDIR /mnt

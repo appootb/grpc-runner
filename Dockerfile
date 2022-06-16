@@ -94,6 +94,10 @@ FROM ubuntu:focal
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
 ENV DART_GRPC_VER 20.0.0
 
+ENV GOPATH /go
+
+ENV PATH /usr/lib/dart/bin:$PATH
+
 RUN apt -q update && apt -q install -y apt-transport-https make && rm -r /var/lib/apt/lists/*
 
 # Go binaries
@@ -103,8 +107,6 @@ COPY --from=go /go/bin/* /usr/local/bin/
 COPY --from=go /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
 COPY --from=go /go/src/github.com/appootb/substratum/proto/appootb /go/src/github.com/appootb/substratum/proto/appootb
 COPY --from=go /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
-
-ENV GOPATH /go
 
 # protoc-gen-swift
 COPY --from=swift /swift-protobuf/.build/release/protoc-gen-swift /usr/local/bin/protoc-gen-swift
@@ -122,9 +124,7 @@ COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen
 # protoc-gen-dart
 COPY --from=binary /dart/dart-sdk/ /usr/lib/dart/
 
-ENV PATH /usr/lib/dart/bin:$PATH
-
-RUN ls -al /usr/lib/dart
+RUN ls -al /usr/lib/dart && export
 
 RUN dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 

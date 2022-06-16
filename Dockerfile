@@ -1,6 +1,6 @@
 #
 # Go binaries
-FROM golang:1.18 AS go
+FROM --platform=$TARGETPLATFORM golang:1.18 AS go
 
 ENV GO111MODULE on
 
@@ -27,7 +27,7 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VER}
 
 #
 # Swift
-FROM swift:5.6-focal AS swift
+FROM --platform=$TARGETPLATFORM swift:5.6-focal AS swift
 
 # protoc-gen-swift version: https://github.com/apple/swift-protobuf/releases/latest
 ENV SWIFT_PLUGIN_VER 1.19.0
@@ -38,21 +38,24 @@ RUN git clone -b ${SWIFT_PLUGIN_VER} https://github.com/apple/swift-protobuf && 
 
 #
 # CSharp
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0-focal AS csharp
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:6.0-focal AS csharp
 
-ARG BUILDARCH
+ARG TARGETPLATFORM
 
 # grpc_csharp_plugin version: https://www.nuget.org/packages/Grpc.Tools
 ENV CS_PLUGIN_VER 2.41.0
 
-RUN /bin/sh -c set -eux; if [ "$BUILDARCH" = "amd64" ]; then ARCH="x64"; else ARCH=$BUILDARCH; fi; \
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64") CS_ARCH=x64 ;; \
+         "linux/arm64") CS_ARCH=arm64 ;; \
+    esac && \
     cd /root && dotnet new console && \
 	dotnet add package Grpc.Tools --version ${CS_PLUGIN_VER} && \
-    cp /root/.nuget/packages/grpc.tools/${CS_PLUGIN_VER}/tools/linux_${ARCH}/grpc_csharp_plugin /usr/local/bin/grpc_csharp_plugin
+    cp /root/.nuget/packages/grpc.tools/${CS_PLUGIN_VER}/tools/linux_${CS_ARCH}/grpc_csharp_plugin /usr/local/bin/grpc_csharp_plugin
 
 #
 # Downloads
-FROM --platform=$BUILDPLATFORM ubuntu:focal AS binary
+FROM --platform=$TARGETPLATFORM ubuntu:focal AS binary
 
 # Protocol Buffers version: https://github.com/protocolbuffers/protobuf/releases/latest
 ENV PROTOC_VER 3.18.1
@@ -63,24 +66,33 @@ ENV WEB_GRPC_VER 1.2.1
 # Dart SDK version: https://dart.dev/get-dart/archive
 ENV DART_SDK_VER 2.17.3
 
-ARG BUILDARCH
+ARG TARGETPLATFORM
 
 RUN apt update && apt install -y apt-transport-https curl unzip
 
 # protoc
-RUN /bin/sh -c set -eux; if [ "$BUILDARCH" = "arm64" ]; then ARCH="aarch_64"; elif [ "$BUILDARCH" = "amd64" ]; then ARCH="x86_64"; else ARCH=$BUILDARCH; fi; \
-    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-${ARCH}.zip; \
-    unzip protoc-${PROTOC_VER}-linux-${ARCH}.zip -d protoc3
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64") PROTOC_ARCH=x86_64 ;; \
+         "linux/arm64") PROTOC_ARCH=aarch_64 ;; \
+    esac && \
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-${PROTOC_ARCH}.zip; \
+    unzip protoc-${PROTOC_VER}-linux-${PROTOC_ARCH}.zip -d protoc3
 
 # Dart SDK
-RUN /bin/sh -c set -eux; if [ "$BUILDARCH" = "amd64" ]; then ARCH="x64"; else ARCH=$BUILDARCH; fi; \
-    curl -OL https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_SDK_VER}/sdk/dartsdk-linux-${ARCH}-release.zip; \
-    unzip dartsdk-linux-${ARCH}-release.zip -d dart
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64") DART_ARCH=x64 ;; \
+         "linux/arm64") DART_ARCH=arm64 ;; \
+    esac && \
+    curl -OL https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_SDK_VER}/sdk/dartsdk-linux-${DART_ARCH}-release.zip; \
+    unzip dartsdk-linux-${DART_ARCH}-release.zip -d dart
 
 # protoc-gen-grpc-java
-RUN /bin/sh -c set -eux; if [ "$BUILDARCH" = "arm64" ]; then ARCH="aarch_64"; elif [ "$BUILDARCH" = "amd64" ]; then ARCH="x86_64"; else ARCH=$BUILDARCH; fi; \
-    curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${JAVA_GRPC_VER}/protoc-gen-grpc-java-${JAVA_GRPC_VER}-linux-${ARCH}.exe && \
-	mv protoc-gen-grpc-java-${JAVA_GRPC_VER}-linux-${ARCH}.exe /usr/local/bin/protoc-gen-grpc-java && chmod +x /usr/local/bin/protoc-gen-grpc-java
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64") JAVA_ARCH=x86_64 ;; \
+         "linux/arm64") JAVA_ARCH=aarch_64 ;; \
+    esac && \
+    curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${JAVA_GRPC_VER}/protoc-gen-grpc-java-${JAVA_GRPC_VER}-linux-${JAVA_ARCH}.exe && \
+	mv protoc-gen-grpc-java-${JAVA_GRPC_VER}-linux-${JAVA_ARCH}.exe /usr/local/bin/protoc-gen-grpc-java && chmod +x /usr/local/bin/protoc-gen-grpc-java
 
 # protoc-gen-grpc-web
 # TODO no arm64 relase binary
@@ -89,7 +101,7 @@ RUN /bin/sh -c set -eux; if [ "$BUILDARCH" = "arm64" ]; then ARCH="aarch_64"; el
 
 #
 # Runner
-FROM ubuntu:focal
+FROM --platform=$TARGETPLATFORM ubuntu:focal
 
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
 ENV DART_GRPC_VER 20.0.0
@@ -122,8 +134,6 @@ COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen
 # protoc-gen-dart
 COPY --from=binary /dart/dart-sdk/ /usr/lib/dart/
 
-RUN ls -al /usr/lib/dart/bin && export
-
-RUN /usr/lib/dart/bin/dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
+RUN dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 
 WORKDIR /mnt

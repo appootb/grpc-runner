@@ -120,7 +120,7 @@ COPY --from=binary /protoc3/include/* /usr/local/include/
 COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen-grpc-java
 
 # protoc-gen-dart
-COPY --from=binary /dart/dart-sdk /usr/lib/dart
+COPY --from=binary /dart/dart-sdk/* /usr/lib/dart/
 
 ENV PATH /usr/lib/dart/bin:$PATH
 

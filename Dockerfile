@@ -106,6 +106,7 @@ FROM --platform=$TARGETPLATFORM ubuntu:focal
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
 ENV DART_GRPC_VER 20.0.0
 
+ENV GOPATH /go
 ENV PATH /usr/lib/dart/bin:$PATH
 
 RUN apt -q update && apt -q install -y apt-transport-https make && rm -r /var/lib/apt/lists/*
@@ -126,7 +127,7 @@ COPY --from=csharp /usr/local/bin/grpc_csharp_plugin /usr/local/bin/grpc_csharp_
 
 # protoc
 COPY --from=binary /protoc3/bin/* /usr/local/bin/
-COPY --from=binary /protoc3/include/* /usr/local/include/
+COPY --from=binary /protoc3/include/ /usr/local/include/
 
 # protoc-gen-grpc-java
 COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen-grpc-java

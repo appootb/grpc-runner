@@ -122,8 +122,7 @@ COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen
 # protoc-gen-dart
 COPY --from=binary /dart/dart-sdk /usr/lib/dart
 
-ENV DART_SDK /usr/lib/dart
-ENV PATH $DART_SDK/bin:$PATH
+ENV PATH /usr/lib/dart/bin:$PATH
 
 RUN dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 

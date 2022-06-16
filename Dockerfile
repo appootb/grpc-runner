@@ -94,8 +94,6 @@ FROM ubuntu:focal
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
 ENV DART_GRPC_VER 20.0.0
 
-ENV GOPATH /go
-
 ENV PATH /usr/lib/dart/bin:$PATH
 
 RUN apt -q update && apt -q install -y apt-transport-https make && rm -r /var/lib/apt/lists/*
@@ -124,8 +122,8 @@ COPY --from=binary /usr/local/bin/protoc-gen-grpc-java /usr/local/bin/protoc-gen
 # protoc-gen-dart
 COPY --from=binary /dart/dart-sdk/ /usr/lib/dart/
 
-RUN ls -al /usr/lib/dart && export
+RUN ls -al /usr/lib/dart/bin && export
 
-RUN dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
+RUN /usr/lib/dart/bin/dart pub global activate protoc_plugin ${DART_GRPC_VER} && ln -s /root/.pub-cache/bin/protoc-gen-dart /usr/local/bin/
 
 WORKDIR /mnt

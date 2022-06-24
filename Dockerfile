@@ -5,13 +5,13 @@ FROM --platform=$TARGETPLATFORM golang:1.18 AS go
 ENV GO111MODULE on
 
 # protoc-gen-go version: https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go
-ENV PROTOC_GEN_GO_VER v1.27.1
+ENV PROTOC_GEN_GO_VER v1.28.0
 # protoc-gen-go-grpc version: https://pkg.go.dev/google.golang.org/grpc/cmd/protoc-gen-go-grpc
-ENV PROTOC_GEN_GO_GRPC_VER v1.1.0
+ENV PROTOC_GEN_GO_GRPC_VER v1.2.0
 # grpc-gateway version: https://github.com/grpc-ecosystem/grpc-gateway/releases/latest
-ENV GRPC_GATEWAY_VER v1.16.0
+ENV GRPC_GATEWAY_VER v2.10.3
 # custome generator version: https://github.com/appootb/grpc-gen/releases/latest
-ENV CUSTOM_GEN_VER v1.3.1
+ENV CUSTOM_GEN_VER master
 
 RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appootb/substratum && \
 	git clone https://github.com/googleapis/googleapis.git /go/src/github.com/googleapis/googleapis && \
@@ -19,11 +19,11 @@ RUN git clone https://github.com/appootb/substratum.git /go/src/github.com/appoo
 
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VER} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@${PROTOC_GEN_GO_GRPC_VER} && \
-	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@${GRPC_GATEWAY_VER} && \
-	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@${GRPC_GATEWAY_VER} && \
-	go install github.com/appootb/grpc-gen/protoc-gen-ootb@${CUSTOM_GEN_VER} && \
-	go install github.com/appootb/grpc-gen/protoc-gen-markdown@${CUSTOM_GEN_VER} && \
-	go install github.com/appootb/grpc-gen/protoc-gen-validate@${CUSTOM_GEN_VER}
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@${GRPC_GATEWAY_VER} && \
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@${GRPC_GATEWAY_VER} && \
+	go install github.com/appootb/grpc-gen/v2/protoc-gen-ootb@${CUSTOM_GEN_VER} && \
+	go install github.com/appootb/grpc-gen/v2/protoc-gen-markdown@${CUSTOM_GEN_VER} && \
+	go install github.com/appootb/grpc-gen/v2/protoc-gen-validate@${CUSTOM_GEN_VER}
 
 #
 # Swift
@@ -43,7 +43,7 @@ FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:6.0-focal AS csharp
 ARG TARGETPLATFORM
 
 # grpc_csharp_plugin version: https://www.nuget.org/packages/Grpc.Tools
-ENV CS_PLUGIN_VER 2.41.0
+ENV CS_PLUGIN_VER 2.47.0
 
 RUN case ${TARGETPLATFORM} in \
          "linux/amd64") CS_ARCH=x64 ;; \
@@ -58,13 +58,13 @@ RUN case ${TARGETPLATFORM} in \
 FROM --platform=$TARGETPLATFORM ubuntu:focal AS binary
 
 # Protocol Buffers version: https://github.com/protocolbuffers/protobuf/releases/latest
-ENV PROTOC_VER 3.18.1
+ENV PROTOC_VER v3.20.1
 # protoc-gen-grpc-java version: https://mvnrepository.com/artifact/io.grpc/protoc-gen-grpc-java
-ENV JAVA_GRPC_VER 1.41.0
+ENV JAVA_GRPC_VER 1.47.0
 # protoc-gen-grpc-web version: https://github.com/grpc/grpc-web/releases/latest
-ENV WEB_GRPC_VER 1.2.1
+ENV WEB_GRPC_VER 1.3.1
 # Dart SDK version: https://dart.dev/get-dart/archive
-ENV DART_SDK_VER 2.17.3
+ENV DART_SDK_VER 2.17.5
 
 ARG TARGETPLATFORM
 
@@ -104,7 +104,7 @@ RUN case ${TARGETPLATFORM} in \
 FROM --platform=$TARGETPLATFORM ubuntu:focal
 
 # protoc-gen-dart version: https://pub.dev/packages/protoc_plugin
-ENV DART_GRPC_VER 20.0.0
+ENV DART_GRPC_VER 20.0.1
 
 ENV GOPATH /go
 ENV PATH /usr/lib/dart/bin:$PATH
@@ -117,7 +117,7 @@ COPY --from=go /go/bin/* /usr/local/bin/
 # GOPATH, proto including files required
 COPY --from=go /go/src/github.com/googleapis/googleapis /go/src/github.com/googleapis/googleapis
 COPY --from=go /go/src/github.com/appootb/substratum/proto/appootb /go/src/github.com/appootb/substratum/proto/appootb
-COPY --from=go /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options
+COPY --from=go /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options /go/src/github.com/grpc-ecosystem/grpc-gateway/protoc-gen-openapiv2/options
 
 # protoc-gen-swift
 COPY --from=swift /swift-protobuf/.build/release/protoc-gen-swift /usr/local/bin/protoc-gen-swift

@@ -58,7 +58,7 @@ RUN case ${TARGETPLATFORM} in \
 FROM --platform=$TARGETPLATFORM ubuntu:focal AS binary
 
 # Protocol Buffers version: https://github.com/protocolbuffers/protobuf/releases/latest
-ENV PROTOC_VER v3.20.1
+ENV PROTOC_VER 3.20.1
 # protoc-gen-grpc-java version: https://mvnrepository.com/artifact/io.grpc/protoc-gen-grpc-java
 ENV JAVA_GRPC_VER 1.47.0
 # protoc-gen-grpc-web version: https://github.com/grpc/grpc-web/releases/latest
